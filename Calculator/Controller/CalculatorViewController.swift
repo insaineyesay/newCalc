@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CalculatorViewController: UIViewController {
     
     private var isFinishedTypingNumber: Bool = true
     private var displayValue: Double {
@@ -34,19 +34,14 @@ class ViewController: UIViewController {
         
         
         if let calcMethod = sender.currentTitle {
-            if calcMethod == CalcButton.plusMinus.rawValue {
-                // cast right side into a string
-                displayValue *= -1
+            let calculator = CalcButtonUtility(number: displayValue)
+            guard let result = calculator.calcFunction(symbol: calcMethod) else {
+                fatalError("The result of the calculation is nil")
             }
             
-            if calcMethod == CalcButton.clear.rawValue {
-                displayValue = 0
-            }
-            
-            if calcMethod == CalcButton.percent.rawValue {
-                displayValue = displayValue * 0.01
-            }
+            displayValue = result
         }
+        
     }
 
     

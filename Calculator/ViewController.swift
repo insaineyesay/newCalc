@@ -11,7 +11,18 @@ import UIKit
 class ViewController: UIViewController {
     
     private var isFinishedTypingNumber: Bool = true
-    
+    private var displayValue: Double {
+        get {
+            guard let currentDisplayValue = Double(displayLabel.text!) else {
+                fatalError("Cannot convert display label text to a double")
+            }
+            return currentDisplayValue
+        }
+        
+        set {
+            displayLabel.text = String(newValue)
+        }
+    }
     @IBOutlet weak var displayLabel: UILabel!
     
     
@@ -21,8 +32,20 @@ class ViewController: UIViewController {
         //What should happen when a non-number button is pressed
         isFinishedTypingNumber = true
         
-        guard let number = Double(displayLabel.text!) else {
-            fatalError("Cannot convert display label text to a double")
+        
+        if let calcMethod = sender.currentTitle {
+            if calcMethod == CalcButton.plusMinus.rawValue {
+                // cast right side into a string
+                displayValue *= -1
+            }
+            
+            if calcMethod == CalcButton.clear.rawValue {
+                displayValue = 0
+            }
+            
+            if calcMethod == CalcButton.percent.rawValue {
+                displayValue = displayValue * 0.01
+            }
         }
     }
 
@@ -35,6 +58,13 @@ class ViewController: UIViewController {
                 displayLabel.text = numValue
                 isFinishedTypingNumber = false
             } else {
+                if numValue == "." {
+                    
+                    let isInt = floor(displayValue) == displayValue
+                    if !isInt {
+                        return
+                    }
+                }
                 displayLabel.text = displayLabel.text! + numValue
             }
             

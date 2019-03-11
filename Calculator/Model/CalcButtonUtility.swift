@@ -13,31 +13,61 @@ enum CalcButton: String {
     case clear = "AC"
     case percent = "%"
     case plusMinus = "+/-"
+    case equalSign = "="
+}
+
+enum Operations: String {
+    case multiply = "×"
+    case add = "+"
+    case subtract = "-"
+    case divide = "÷"
 }
 
 struct CalcButtonUtility {
-    var number: Double
+    private var number: Double?
     
-    init(number: Double) {
+    private var intermediateCalculation: (n1: Double, calcMethod: String)?
+    
+    mutating func setNumber(_ number: Double) {
         self.number = number
     }
     
-    func calcFunction (symbol: String) -> Double? {
+    mutating func calcFunction (symbol: String) -> Double? {
         
-            if symbol == CalcButton.plusMinus.rawValue {
-                // cast right side into a string
-                return number * -1
-            }
-            
-            if symbol == CalcButton.clear.rawValue {
+        if let n = number {
+            switch symbol {
+            case  CalcButton.plusMinus.rawValue:
+                return n * -1
+            case CalcButton.clear.rawValue:
                 return 0
+            case CalcButton.percent.rawValue:
+                return n * 0.01
+            case CalcButton.equalSign.rawValue:
+                return performCalculation(n2: n)
+            default:
+                intermediateCalculation = (n1: n, calcMethod: symbol)
             }
-            
-            if symbol == CalcButton.percent.rawValue {
-                return number * 0.01
-            }
-            
+        }
+        return nil
+    }
+    
+    private func performCalculation(n2: Double) -> Double? {
         
+        if let n1 = intermediateCalculation?.n1,
+            let operation = intermediateCalculation?.calcMethod {
+            switch operation {
+            case Operations.add.rawValue:
+                return n1 + n2
+            case Operations.multiply.rawValue:
+                return n1 * n2
+            case Operations.subtract.rawValue:
+                return n1 - n2
+            case Operations.divide.rawValue:
+                return n1 / n2
+            default:
+                fatalError("The operation pass does not match ony case")
+            }
+        }
         return nil
     }
 }

@@ -13,6 +13,8 @@ class CalculatorViewController: UIViewController {
     private var isFinishedTypingNumber: Bool = true
     private var displayValue: Double {
         get {
+            // TODO: - fix this, it's allowing double decimal points and causing the app to crash
+            // problem starts on line 60 " if numValue == "." {"
             guard let currentDisplayValue = Double(displayLabel.text!) else {
                 fatalError("Cannot convert display label text to a double")
             }
@@ -26,20 +28,21 @@ class CalculatorViewController: UIViewController {
     @IBOutlet weak var displayLabel: UILabel!
     
     
-    
+    private var calculator = CalcButtonUtility()
+
     @IBAction func calcButtonPressed(_ sender: UIButton) {
         
         //What should happen when a non-number button is pressed
         isFinishedTypingNumber = true
         
+        calculator.setNumber(displayValue)
         
         if let calcMethod = sender.currentTitle {
-            let calculator = CalcButtonUtility(number: displayValue)
-            guard let result = calculator.calcFunction(symbol: calcMethod) else {
-                fatalError("The result of the calculation is nil")
+            if let result = calculator.calcFunction(symbol: calcMethod) {
+                displayValue = result
             }
             
-            displayValue = result
+            
         }
         
     }
@@ -54,9 +57,11 @@ class CalculatorViewController: UIViewController {
                 isFinishedTypingNumber = false
             } else {
                 if numValue == "." {
-                    
+//                    guard let currentDisplayValue = Double(displayLabel.text!) else {
+//                        fatalError("Cannot convert display label text to a double")
+//                    }
                     let isInt = floor(displayValue) == displayValue
-                    if !isInt {
+                    if !isInt && displayLabel.text!.contains(".") {
                         return
                     }
                 }
